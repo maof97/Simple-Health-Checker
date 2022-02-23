@@ -1,32 +1,35 @@
 package main
 
 import (
-	"context"
-	"crypto/rand"
 	"crypto/tls"
 	"crypto/x509"
-	"database/sql"
-	"encoding/base64"
-	"encoding/csv"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
-	"math"
-	"net"
 	"net/http"
-	"net/url"
 	"os"
-	"path"
-	"runtime"
-	"strings"
-	"time"
-
-	"github.com/go-sql-driver/mysql"
 )
 
 type Response_Generic struct {
 	Id     string
 	Result string
+}
+
+type Request_WL struct {
+	Id              string
+	Host            string
+	Exp_time        int
+	Domain_full     string
+	Label_tld       string
+	Label_domain    string
+	Label_subdomain string
+	Is_verified     bool
+}
+
+type Person struct {
+	Name string
+	Age  int
 }
 
 func helloHandler(w http.ResponseWriter, r *http.Request) {
@@ -38,8 +41,8 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 func testAPI(w http.ResponseWriter, r *http.Request) {
 	log(0, "API", "Test API was called")
 	// Declare a new Person struct.
-	var p Person
 	Response := ""
+	var p Person
 
 	// Try to decode the request body into the struct. If there is an error,
 	// respond to the client with the error message and a 400 status code.
@@ -61,6 +64,7 @@ func API_wl(w http.ResponseWriter, r *http.Request) {
 	// Declare a new Person struct.
 	var req Request_WL //...in JSON
 	var resp Response_Generic
+	_ = resp
 
 	// Try to decode the request body into the struct. If there is an error,
 	// respond to the client with the error message and a 400 status code.
@@ -79,12 +83,7 @@ func API_wl(w http.ResponseWriter, r *http.Request) {
 		//Handle Request####
 		if req.Is_verified {
 			if req.Exp_time > 0 { //if not permanent...
-				write_tmp_wl(req.Domain_full, req.Exp_time)
-				log(1, "WHITELISTING", "API: Temp whitelisted domain: \""+req.Domain_full+"\" for "+fmt.Sprint(req.Exp_time)+" Minutes because of an API call with uid="+req.Id)
-				log(1, "API", "Request "+req.Id+": Temp whitelisted domain: \""+req.Domain_full+"\" for "+fmt.Sprint(req.Exp_time)+" Minutes.")
-				resp.Id = req.Id
-				resp.Result = "Success"
-				fmt.Fprintf(w, "%+v", resp)
+
 			}
 
 			if req.Exp_time == -1 { //if permanent
@@ -132,28 +131,27 @@ func HandleAPI() {
 	log(3, "ERROR", "ListenAndServerTLSErr: "+(server.ListenAndServeTLS("lib/tls-certs/NIAN+WCP-API+Server.pem", "lib/tls-certs/NIAN+WCP-API+Server-key.pem")).Error()) //TODO implement path in config.yml
 }
 
-
 func main() {
 	log(1, "INIT", "**  Starting Health Checker... **")
 
 	// Open config file
-	PWD := os.Getwd()
-	_, err = ioutil.ReadFile(PWD+"/config.json") //Open Default DB
+	PWD, _ := os.Getwd()
+	_, err := ioutil.ReadFile(PWD + "/config.json") //Open Default DB
 	if err != nil {
-		log(2, "Fatal Error opening Config file")
+		log(2, "", "Fatal Error opening Config file")
 		return
 	} else {
-		log(1,"" ,"STARTUP: Successful at opening config file.")
-	
+		log(1, "", "STARTUP: Successful at opening config file.")
 
-	//SQL CONNECT
-	//sql_connect()
+		//SQL CONNECT
+		//sql_connect()
 
-	go HandleAPI()
+		go HandleAPI()
 
+	}
+}
 
-
-func log(_ , _, msg){
+func log(_ int, _ string, msg string) {
 	// TODO Improve logging
 	print(msg)
 	return
