@@ -5,41 +5,29 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
-	"os"
 )
+
+var DEBUG_MODE bool
 
 type Response_Generic struct {
 	Id     string
 	Result string
 }
 
-type Request_WL struct {
-	Id              string
-	Host            string
-	Exp_time        int
-	Domain_full     string
-	Label_tld       string
-	Label_domain    string
-	Label_subdomain string
-	Is_verified     bool
-}
-
-type Person struct {
-	Name string
-	Age  int
+type healthStatus struct {
+	Id               string
+	Host             string
+	Status           string
+	StatusMessage    string
+	SubStatus        string
+	SubStatusMessage string
+	TimeUnix         int
 }
 
 func helloHandler(w http.ResponseWriter, r *http.Request) {
-	// Write "Hello, world!" to the response body
-	log(0, "API", "HelloWorld of API was called")
-	io.WriteString(w, "Hello, world!\n")
-}
-
-func testAPI(w http.ResponseWriter, r *http.Request) {
-	log(0, "API", "Test API was called")
+	newLog(0, "API", "Test API was called (hello)")
 	// Declare a new Person struct.
 	Response := ""
 	var p Person
@@ -57,9 +45,7 @@ func testAPI(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Person: %+v", p)
 }
 
-//#####
-
-func API_wl(w http.ResponseWriter, r *http.Request) {
+func reportStatusHandler(w http.ResponseWriter, r *http.Request) {
 	log(0, "API", "API was called to whitelist a domain by "+r.RemoteAddr)
 	// Declare a new Person struct.
 	var req Request_WL //...in JSON
@@ -82,13 +68,7 @@ func API_wl(w http.ResponseWriter, r *http.Request) {
 
 		//Handle Request####
 		if req.Is_verified {
-			if req.Exp_time > 0 { //if not permanent...
 
-			}
-
-			if req.Exp_time == -1 { //if permanent
-				//TODO
-			}
 		} else {
 			//TODO
 			log(2, "API", "Request "+req.Id+" denied because not verified.")
@@ -99,12 +79,10 @@ func API_wl(w http.ResponseWriter, r *http.Request) {
 
 }
 
-//######
-func HandleAPI() {
+func awaitHealthUpdate() {
 	// Set up handlers
 	http.HandleFunc("/hello", helloHandler)
-	//	http.HandleFunc("/testapi", testAPI)
-	http.HandleFunc("/request_wl", API_wl)
+	http.HandleFunc("/report_status", reportStatusHandler)
 
 	// Create a CA certificate pool and add cert.pem to it
 	caCert, err := ioutil.ReadFile("lib/tls-certs/NIAN+WCP-API+Client.pem") //TODO implement path in config.yml
@@ -132,27 +110,44 @@ func HandleAPI() {
 }
 
 func main() {
-	log(1, "INIT", "**  Starting Health Checker... **")
+	go awaitHealthUpdate()
 
-	// Open config file
-	PWD, _ := os.Getwd()
-	_, err := ioutil.ReadFile(PWD + "/config.json") //Open Default DB
-	if err != nil {
-		log(2, "", "Fatal Error opening Config file")
-		return
-	} else {
-		log(1, "", "STARTUP: Successful at opening config file.")
+}
 
-		//SQL CONNECT
-		//sql_connect()
+func newLog(logType int, sub_logType string, msg string) {
+	// TODO Improve logging
+	if logType > 0 { //if _not_ INTERNAL
 
-		go HandleAPI()
-
+	}
+	if DEBUG_MODE && sub_logType == "DEBUG" {
+		print(msg)
 	}
 }
 
-func log(_ int, _ string, msg string) {
-	// TODO Improve logging
-	print(msg)
-	return
+func logToElastic() {
+
+}
+
+func logToFile() {
+
+}
+
+func reportAsMail() {
+
+}
+
+func alertAsMail() {
+
+}
+
+func alertAsTelegramMessage() {
+
+}
+
+func alertToElastic() {
+
+}
+
+func doActiveHealthCheck() {
+
 }
