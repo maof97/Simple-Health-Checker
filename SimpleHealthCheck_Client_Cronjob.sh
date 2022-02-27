@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 exec 3>&1 4>&2
 trap 'exec 2>&4 1>&3' 0 1 2 3
-exec 1>log.out 2>&1
+exec 1>/root/Simple-Health-Checker/log_SHC_Client_Cron.out 2>&1
 # Everything below will go to the file 'log.out':
 
 SURICATA_IF_NAMES=("vtnet1" "tun_wg0" "vtnet0")
