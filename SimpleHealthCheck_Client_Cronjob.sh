@@ -36,6 +36,5 @@ do
     else
         echo "[INFO] Suricata is running stable on interface $SURICATA_IF_NAME."           
     fi
-    fi
 done
 echo "\n## Script finished. ##\n"
