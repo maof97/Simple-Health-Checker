@@ -4,7 +4,7 @@ trap 'exec 2>&4 1>&3' 0 1 2 3
 exec 1>log.out 2>&1
 # Everything below will go to the file 'log.out':
 
-SURICATA_IF_NAMES=("vtnet1" "tun_wg0")
+SURICATA_IF_NAMES="vtnet1" "tun_wg0"
 
 echo "## Started Simple health check script ##\n\n"
 
