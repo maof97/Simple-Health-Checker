@@ -1,0 +1,22 @@
+## Started Simple health check script ##\n\n
+[D] Started Suricata health check...\n
+[D] Handling health check of interface vtnet1
+[D] Suricata PID File Found
+[INFO] Suricata is NOT running on interface vtnet1! Will try to fix this...
+[D] Removing potential stuck PID file
+override rw-r--r--  root/daemon for /var/run/suricata_vtnet139657.pid? [D] Restarting Suricata on interface
+find: /usr/local/etc/suricata: No such file or directory
+[D] Parsed vars: CONFIG_PATH= TUN_NUMBER=
+./SimpleHealthCheck_Client_Cronjob.sh: line 38: /usr/local/bin/suricata: No such file or directory
+[WARNING] Could not restart Suricata on interface vtnet1
+[D] Handling health check of interface tun_wg0
+[D] Suricata PID File Found
+[INFO] Suricata is NOT running on interface tun_wg0! Will try to fix this...
+[D] Removing potential stuck PID file
+rm: /var/run/suricata_tun_wg0*: No such file or directory
+[D] Restarting Suricata on interface
+find: /usr/local/etc/suricata: No such file or directory
+[D] Parsed vars: CONFIG_PATH= TUN_NUMBER=
+./SimpleHealthCheck_Client_Cronjob.sh: line 38: /usr/local/bin/suricata: No such file or directory
+[WARNING] Could not restart Suricata on interface tun_wg0
+\n## Script finished. ##\n
