@@ -4,7 +4,7 @@ trap 'exec 2>&4 1>&3' 0 1 2 3
 exec 1>log.out 2>&1
 # Everything below will go to the file 'log.out':
 
-SURICATA_IF_NAMES=("vtnet1" "tun_wg0")
+SURICATA_IF_NAMES=("vtnet1" "tun_wg0" "vtnet0")
 
 echo "## Started Simple health check script ##\n\n"
 
@@ -23,7 +23,6 @@ do
     if [ "$SURICATA_PID" != "" ]
     then
         echo "[D] Suricata PID File Found"
-        PS_SURICATA=$(ps aux |grep "$SURICATA_PID")
 
         if ! ps -p $SURICATA_PID > /dev/null 2> /dev/null
         then
@@ -37,7 +36,7 @@ do
             echo "[D] Parsed vars: CONFIG_PATH=$SURICATA_CONFIG_PATH TUN_NUMBER=$SURICATA_TUN_NUMBER"
             nohup /usr/local/bin/suricata -i tun_$SURICATA_IF_NAME -D -c $SURICATA_CONFIG_PATH/suricata.yaml --pidfile /var/run/suricata_$SURICATA_IF_NAME$SURICATA_TUN_NUMBER.pid &
 
-            if ps -p $SURICATA_PID > /dev/null 2> /dev/null
+            if ps aux | grep suricata | grep $SURICATA_IF_NAME 2> /dev/null
             then
                 echo "[INFO] Suricata was successfully restarted on interface $SURICATA_IF_NAME!"
             else
