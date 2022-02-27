@@ -35,7 +35,7 @@ do
             SURICATA_CONFIG_PATH=$(find /usr/local/etc/suricata -path /usr/local/etc/suricata/suricata_*_$SURICATA_IF_NAME)
             SURICATA_TUN_NUMBER=$(echo $SURICATA_CONFIG_PATH |tr -d -c 0-9)
             echo "[D] Parsed vars: CONFIG_PATH=$SURICATA_CONFIG_PATH TUN_NUMBER=$SURICATA_TUN_NUMBER"
-            /usr/local/bin/suricata -i tun_$SURICATA_IF_NAME -D -c $SURICATA_CONFIG_PATH/suricata.yml --pidfile /var/run/suricata_$SURICATA_IF_NAME$SURICATA_TUN_NUMBER.pid
+            nohup /usr/local/bin/suricata -i tun_$SURICATA_IF_NAME -D -c $SURICATA_CONFIG_PATH/suricata.yaml --pidfile /var/run/suricata_$SURICATA_IF_NAME$SURICATA_TUN_NUMBER.pid &
 
             if ps -p $SURICATA_PID > /dev/null 2> /dev/null
             then
